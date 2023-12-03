@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{9FD4249B-053E-4900-A0AF-834628B8B82A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sln-items-sync", "src\sln-items-sync.csproj", "{2F916CD2-B6E7-44C3-8B29-5658CA166700}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{F7226E79-E7AF-44D2-8071-A019146DCA06}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.tool-versions = .tool-versions
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{50259428-AA36-4437-AF08-F1B4DFE0D580}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8397A6CD-B67C-4FBB-9ED9-59C92393BA16}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FD4249B-053E-4900-A0AF-834628B8B82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FD4249B-053E-4900-A0AF-834628B8B82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FD4249B-053E-4900-A0AF-834628B8B82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FD4249B-053E-4900-A0AF-834628B8B82A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F916CD2-B6E7-44C3-8B29-5658CA166700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F916CD2-B6E7-44C3-8B29-5658CA166700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F916CD2-B6E7-44C3-8B29-5658CA166700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F916CD2-B6E7-44C3-8B29-5658CA166700}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{50259428-AA36-4437-AF08-F1B4DFE0D580} = {F7226E79-E7AF-44D2-8071-A019146DCA06}
+		{8397A6CD-B67C-4FBB-9ED9-59C92393BA16} = {50259428-AA36-4437-AF08-F1B4DFE0D580}
+	EndGlobalSection
+EndGlobal
