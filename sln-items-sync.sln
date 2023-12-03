@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{50259428-AA36-4437-AF08-F1B4DFE0D580}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8397A6CD-B67C-4FBB-9ED9-59C92393BA16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{50259428-AA36-4437-AF08-F1B4DFE0D580} = {F7226E79-E7AF-44D2-8071-A019146DCA06}
+		{8397A6CD-B67C-4FBB-9ED9-59C92393BA16} = {50259428-AA36-4437-AF08-F1B4DFE0D580}
 	EndGlobalSection
 EndGlobal
