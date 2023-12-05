@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SlnParser" Version="3.0.0" />
+    <PackageReference Include="SlnEditor" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
