@@ -7,6 +7,10 @@ namespace sln_items_sync;
 
 public class Program
 {
+    private const string SolutionitemsName = "SolutionItems";
+    private static SolutionParser _parser = new();
+    private static Guid _solutionFolderTypeGuid = new ProjectTypeMapper().ToGuid(ProjectType.SolutionFolder);
+
     public class Options
     {
         [Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
@@ -36,14 +40,55 @@ public class Program
     /// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
     public static void SyncPaths(string slnPath, IList<string> paths)
     {
-        var parser = new SolutionParser();
-        var solution = parser.Parse(slnPath);
-        var solutionFolderTypeGuid = new ProjectTypeMapper().ToGuid(ProjectType.SolutionFolder);
-        var solutionFolder = new SolutionFolder(Guid.NewGuid(), "foo", "foo/", solutionFolderTypeGuid, ProjectType.SolutionFolder);
-        var nestedSolutionFolder = new SolutionFolder(Guid.NewGuid(), "bar", "bar/", solutionFolderTypeGuid, ProjectType.SolutionFolder);
-        solutionFolder.Projects.Add(nestedSolutionFolder);
-        solution.Projects.Add(solutionFolder);
+        var solution = _parser.Parse(slnPath);
+
+        var solutionItems = FindOrCreateSolutionItems(solution);
+
+        foreach (var path in paths)
+        {
+            if (File.Exists(path) && solutionItems.Files.All(f => f.Name != path))
+            {
+                solutionItems.Files.Add(new FileInfo(path));
+            }else if (Directory.Exists(path))
+            {
+                SyncFolder(solution, path);
+            }
+            else
+            {
+                throw new Exception($"path not found: '{path}'");
+            }
+        }
+
+
         var updatedSln = solution.Write();
         File.WriteAllText(slnPath, updatedSln);
     }
+
+    private static void SyncFolder(ISolution solution, string path)
+    {
+        // todo
+        // var solutionFolder = new SolutionFolder(Guid.NewGuid(), "foo", "foo/", _solutionFolderTypeGuid, ProjectType.SolutionFolder);
+        //
+        // var nestedSolutionFolder = new SolutionFolder(Guid.NewGuid(), "bar", "bar/", _solutionFolderTypeGuid, ProjectType.SolutionFolder);
+        // solutionFolder.Projects.Add(nestedSolutionFolder);
+        // solution.Projects.Add(solutionFolder);
+    }
+
+    private static SolutionFolder FindOrCreateSolutionItems(ISolution solution)
+    {
+        var solutionItems = FindSolutionItems(solution);
+        if (solutionItems is not null)
+        {
+            return solutionItems;
+        }
+
+        solutionItems = new SolutionFolder(id: Guid.NewGuid(), name: SolutionitemsName, path: SolutionitemsName,
+            typeGuid: _solutionFolderTypeGuid, ProjectType.SolutionFolder);
+        solution.Projects.Add(solutionItems);
+
+        return solutionItems;
+    }
+
+    private static SolutionFolder? FindSolutionItems(ISolution solution)
+        => solution.Projects.OfType<SolutionFolder>().FirstOrDefault(project => project.Name == SolutionitemsName);
 }
