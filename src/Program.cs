@@ -48,13 +48,13 @@ public class Program
 
         foreach (var path in paths)
         {
-            if (File.Exists(path) && solutionItems.Files.All(f => f.Name != path))
+            if (File.Exists(path) && solutionItems.Files.All(f => f != path))
             {
-                solutionItems.Files.Add(new FileInfo(path));
+                solutionItems.Files.Add(path);
             }
             else if (Directory.Exists(path))
             {
-                SyncFolder(solutionItems, new DirectoryInfo(path));
+                SyncFolder(solutionItems, new DirectoryInfo(path), $"{path}/");
             }
             else
             {
@@ -67,19 +67,19 @@ public class Program
         File.WriteAllText(slnPath, updatedSln);
     }
 
-    private static void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory)
+    private static void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory, string path)
     {
         var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, directory.Name, $"{directory.Name}/");
         foreach (var file in directory.EnumerateFiles())
         {
-            if (solutionFolder.Files.All(f => f.Name != file.Name))
+            if (solutionFolder.Files.All(f => f != file.Name))
             {
-                solutionFolder.Files.Add(file);
+                solutionFolder.Files.Add($"{path}{file.Name}");
             }
         }
         foreach (var subDirectory in directory.EnumerateDirectories())
         {
-            SyncFolder(solutionFolder, subDirectory);
+            SyncFolder(solutionFolder, subDirectory, $"{path}{subDirectory.Name}/");
         }
 
         // todo
