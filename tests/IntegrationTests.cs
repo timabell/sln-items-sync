@@ -4,10 +4,10 @@ using Xunit.Abstractions;
 
 namespace tests;
 
-public class UnitTest1(ITestOutputHelper output)
+public class IntegrationTests(ITestOutputHelper output)
 {
 	[Fact]
-    public void Test1()
+    public void ModifiesSln()
     {
         var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         output.WriteLine($"Temp path {tmp}");

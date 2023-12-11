@@ -16,7 +16,8 @@ public class Program
         [Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
         public string SlnPath { get; set; }
 
-        [Option] public IList<string> Paths { get; set; }
+        [CommandLine.Value(0)]
+        public IEnumerable<string> Paths { get; set; }
     }
 
     public static int Main(string[] args)
@@ -39,7 +40,7 @@ public class Program
     /// </summary>
     /// <param name="slnPath">relative path to sln file to modify</param>
     /// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
-    public static void SyncPaths(string slnPath, IList<string> paths)
+    public static void SyncPaths(string slnPath, IEnumerable<string> paths)
     {
         var solution = _parser.Parse(slnPath);
 
