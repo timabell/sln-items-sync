@@ -33,10 +33,9 @@ EndGlobal
 ";
         File.WriteAllText(Path.Combine(tmp, "original.sln"), sln);
         File.WriteAllText(Path.Combine(tmp, "target.sln"), sln);
-        File.WriteAllText(Path.Combine(tmp, "somefile.txt"), "");
-        Directory.CreateDirectory(Path.Combine(tmp, "somefolder"));
-        Directory.CreateDirectory(Path.Combine(tmp, "somefolder", "subfolder"));
-        File.WriteAllText(Path.Combine(tmp, "somefolder", "subfolder", "file.txt"), "");
+        File.WriteAllText(Path.Combine(tmp, "rootfile.txt"), "");
+        Directory.CreateDirectory(Path.Combine(tmp, "subfolder", "nested_folder"));
+        File.WriteAllText(Path.Combine(tmp, "subfolder", "nested_folder", "nested_file.txt"), "");
 
         const string expected = @"
 
@@ -58,7 +57,7 @@ EndGlobal
 ";
 
 
-        Program.Main(new[] { "-s", "target.sln", "somefile.txt", "somefolder" });
+        Program.Main(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
 
         var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
         actual.Should().Be(expected);

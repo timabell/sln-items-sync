@@ -67,19 +67,19 @@ public class Program
         File.WriteAllText(slnPath, updatedSln);
     }
 
-    private static void SyncFolder(SolutionFolder parentSolutionFolder, DirectoryInfo directory)
+    private static void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory)
     {
+        var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, directory.Name, $"{directory.Name}/");
         foreach (var file in directory.EnumerateFiles())
         {
-            if (parentSolutionFolder.Files.All(f => f.Name != file.Name))
+            if (solutionFolder.Files.All(f => f.Name != file.Name))
             {
-                parentSolutionFolder.Files.Add(file);
+                solutionFolder.Files.Add(file);
             }
         }
-        foreach (var folder in directory.EnumerateDirectories())
+        foreach (var subDirectory in directory.EnumerateDirectories())
         {
-            var slnFolder = FindOrCreateSolutionFolder(parentSolutionFolder.Projects, folder.Name, $"{folder.Name}/");
-            SyncFolder(slnFolder, folder);
+            SyncFolder(solutionFolder, subDirectory);
         }
 
         // todo
