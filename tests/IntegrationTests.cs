@@ -50,7 +50,7 @@ Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder
 EndProject
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""nested_folder"", ""nested_folder/"", ""{F5636E74-888A-4FBD-A8E2-9718A05D90BD}""
         ProjectSection(SolutionItems) = preProject
-                nested_file.txt = nested_file.txt
+                subfolder/nested_folder/nested_file.txt = subfolder/nested_folder/nested_file.txt
         EndProjectSection
 EndProject
 Global
