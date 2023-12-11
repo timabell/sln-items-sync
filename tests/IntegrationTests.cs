@@ -9,7 +9,7 @@ public class IntegrationTests(ITestOutputHelper output)
 	[Fact]
 	public void ModifiesSln()
 	{
-		var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+		var tmp = Path.Combine(Path.GetTempPath(), "sln-items-sync-tests", Guid.NewGuid().ToString());
 		output.WriteLine($"Temp path:\r\n{tmp}");
 		Directory.CreateDirectory(tmp);
 		Directory.SetCurrentDirectory(tmp);
