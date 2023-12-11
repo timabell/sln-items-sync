@@ -7,7 +7,7 @@ namespace sln_items_sync;
 
 public class Program
 {
-    private const string SolutionitemsName = "SolutionItems";
+    private const string SolutionItemsName = "SolutionItems";
     private static SolutionParser _parser = new();
     private static Guid _solutionFolderTypeGuid = new ProjectTypeMapper().ToGuid(ProjectType.SolutionFolder);
 
@@ -16,9 +16,9 @@ public class Program
         [Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
         public string SlnPath { get; set; }
 
-        [Option]
-        public IList<string> Paths { get; set; }
+        [Option] public IList<string> Paths { get; set; }
     }
+
     public static int Main(string[] args)
     {
         var parserResult = Parser.Default.ParseArguments<Options>(args);
@@ -26,6 +26,7 @@ public class Program
         {
             return 1;
         }
+
         parserResult
             .WithParsed(opts => SyncPaths(slnPath: opts.SlnPath, opts.Paths));
         return 0;
@@ -42,16 +43,17 @@ public class Program
     {
         var solution = _parser.Parse(slnPath);
 
-        var solutionItems = FindOrCreateSolutionItems(solution);
+        var solutionItems = FindOrCreateSolutionItems(solution.Projects, SolutionItemsName, SolutionItemsName);
 
         foreach (var path in paths)
         {
             if (File.Exists(path) && solutionItems.Files.All(f => f.Name != path))
             {
                 solutionItems.Files.Add(new FileInfo(path));
-            }else if (Directory.Exists(path))
+            }
+            else if (Directory.Exists(path))
             {
-                SyncFolder(solution, path);
+                SyncFolder(solutionItems, path);
             }
             else
             {
@@ -64,8 +66,19 @@ public class Program
         File.WriteAllText(slnPath, updatedSln);
     }
 
-    private static void SyncFolder(ISolution solution, string path)
+    private static void SyncFolder(SolutionFolder parentSolutionFolder, string path)
     {
+        var directory = new DirectoryInfo(path);
+
+        foreach (var file in directory.EnumerateFiles())
+        {
+
+        }
+        foreach (var folder in directory.EnumerateDirectories())
+        {
+
+        }
+
         // todo
         // var solutionFolder = new SolutionFolder(Guid.NewGuid(), "foo", "foo/", _solutionFolderTypeGuid, ProjectType.SolutionFolder);
         //
@@ -74,21 +87,22 @@ public class Program
         // solution.Projects.Add(solutionFolder);
     }
 
-    private static SolutionFolder FindOrCreateSolutionItems(ISolution solution)
+    private static SolutionFolder FindOrCreateSolutionItems(ICollection<IProject> solutionProjects,
+        string solutionFolderName, string path)
     {
-        var solutionItems = FindSolutionItems(solution);
+        var solutionItems = FindSolutionItems(solutionProjects, solutionFolderName);
         if (solutionItems is not null)
         {
             return solutionItems;
         }
 
-        solutionItems = new SolutionFolder(id: Guid.NewGuid(), name: SolutionitemsName, path: SolutionitemsName,
+        solutionItems = new SolutionFolder(id: Guid.NewGuid(), name: solutionFolderName, path: path,
             typeGuid: _solutionFolderTypeGuid, ProjectType.SolutionFolder);
-        solution.Projects.Add(solutionItems);
+        solutionProjects.Add(solutionItems);
 
         return solutionItems;
     }
 
-    private static SolutionFolder? FindSolutionItems(ISolution solution)
-        => solution.Projects.OfType<SolutionFolder>().FirstOrDefault(project => project.Name == SolutionitemsName);
+    private static SolutionFolder? FindSolutionItems(IEnumerable<IProject> solutionProjects, string folderName)
+        => solutionProjects.OfType<SolutionFolder>().FirstOrDefault(project => project.Name == folderName);
 }
