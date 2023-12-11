@@ -27,10 +27,4 @@
     <ProjectReference Include="..\src\sln-items-sync.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="data\.github\workflows\bar.yml" />
-    <Content Include="data\.github\workflows\foo.yml" />
-    <Content Include="data\example.sln" />
-  </ItemGroup>
-
 </Project>
