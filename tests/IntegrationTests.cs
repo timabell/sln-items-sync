@@ -81,10 +81,6 @@ EndGlobal
 
 		var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
 		actual.Should().Be(expected);
-		Directory.GetCurrentDirectory().Should().Be("aaarg");
-		// string original = @"something";
-		// var fakeFilesystem = FakeFilesystem();
-
 	}
 }
 
