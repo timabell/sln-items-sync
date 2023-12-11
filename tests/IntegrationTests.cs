@@ -7,13 +7,13 @@ namespace tests;
 public class IntegrationTests(ITestOutputHelper output)
 {
 	[Fact]
-    public void ModifiesSln()
-    {
-        var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        output.WriteLine($"Temp path:\r\n{tmp}");
-        Directory.CreateDirectory(tmp);
-        Directory.SetCurrentDirectory(tmp);
-        const string sln = @"
+	public void ModifiesSln()
+	{
+		var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+		output.WriteLine($"Temp path:\r\n{tmp}");
+		Directory.CreateDirectory(tmp);
+		Directory.SetCurrentDirectory(tmp);
+		const string sln = @"
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -30,18 +30,18 @@ Global
 	EndGlobalSection
 EndGlobal
 ";
-        File.WriteAllText(Path.Combine(tmp, "original.sln"), sln);
-        File.WriteAllText(Path.Combine(tmp, "target.sln"), sln);
-        File.WriteAllText(Path.Combine(tmp, "rootfile.txt"), "");
-        Directory.CreateDirectory(Path.Combine(tmp, "subfolder", "nested_folder"));
-        File.WriteAllText(Path.Combine(tmp, "subfolder", "nested_folder", "nested_file.txt"), "");
+		File.WriteAllText(Path.Combine(tmp, "original.sln"), sln);
+		File.WriteAllText(Path.Combine(tmp, "target.sln"), sln);
+		File.WriteAllText(Path.Combine(tmp, "rootfile.txt"), "");
+		Directory.CreateDirectory(Path.Combine(tmp, "subfolder", "nested_folder"));
+		File.WriteAllText(Path.Combine(tmp, "subfolder", "nested_folder", "nested_file.txt"), "");
 
-        var fakeGuidGenerator = new FakeGuidGenerator();
-        fakeGuidGenerator.Guids.Enqueue(new Guid("{17591C35-3F90-4F4A-AA13-45CF8D824066}"));
-        fakeGuidGenerator.Guids.Enqueue(new Guid("{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}"));
-        fakeGuidGenerator.Guids.Enqueue(new Guid("{F5636E74-888A-4FBD-A8E2-9718A05D90BD}"));
+		var fakeGuidGenerator = new FakeGuidGenerator();
+		fakeGuidGenerator.Guids.Enqueue(new Guid("{17591C35-3F90-4F4A-AA13-45CF8D824066}"));
+		fakeGuidGenerator.Guids.Enqueue(new Guid("{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}"));
+		fakeGuidGenerator.Guids.Enqueue(new Guid("{F5636E74-888A-4FBD-A8E2-9718A05D90BD}"));
 
-        const string expected = @"
+		const string expected = @"
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -74,25 +74,25 @@ Global
         EndGlobalSection
 EndGlobal
 ";
-        File.WriteAllText(Path.Combine(tmp, "expected.sln"), expected);
+		File.WriteAllText(Path.Combine(tmp, "expected.sln"), expected);
 
 
-        new CLI(fakeGuidGenerator).Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
+		new CLI(fakeGuidGenerator).Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
 
-        var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
-        actual.Should().Be(expected);
-        Directory.GetCurrentDirectory().Should().Be("aaarg");
-        // string original = @"something";
-        // var fakeFilesystem = FakeFilesystem();
+		var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
+		actual.Should().Be(expected);
+		Directory.GetCurrentDirectory().Should().Be("aaarg");
+		// string original = @"something";
+		// var fakeFilesystem = FakeFilesystem();
 
-    }
+	}
 }
 
 public class FakeGuidGenerator : IGuidGenerator
 {
-        public readonly Queue<Guid> Guids = new();
-        public Guid Next()
-        {
-                return Guids.Dequeue();
-        }
+	public readonly Queue<Guid> Guids = new();
+	public Guid Next()
+	{
+		return Guids.Dequeue();
+	}
 }
