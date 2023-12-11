@@ -1,1 +1,1 @@
-return sln_items_sync.CLI.Run(args);
+return new sln_items_sync.CLI().Run(args);
