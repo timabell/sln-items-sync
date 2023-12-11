@@ -71,7 +71,7 @@ EndGlobal
 ";
 
 
-        Program.Main(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
+        CLI.Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
 
         var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
         actual.Should().Be(expected);
