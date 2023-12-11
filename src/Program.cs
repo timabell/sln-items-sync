@@ -44,7 +44,7 @@ public class Program
     {
         var solution = _parser.Parse(slnPath);
 
-        var solutionItems = FindOrCreateSolutionItems(solution.Projects, SolutionItemsName, SolutionItemsName);
+        var solutionItems = FindOrCreateSolutionFolder(solution.Projects, SolutionItemsName, SolutionItemsName);
 
         foreach (var path in paths)
         {
@@ -54,7 +54,7 @@ public class Program
             }
             else if (Directory.Exists(path))
             {
-                SyncFolder(solutionItems, path);
+                SyncFolder(solutionItems, new DirectoryInfo(path));
             }
             else
             {
@@ -67,17 +67,19 @@ public class Program
         File.WriteAllText(slnPath, updatedSln);
     }
 
-    private static void SyncFolder(SolutionFolder parentSolutionFolder, string path)
+    private static void SyncFolder(SolutionFolder parentSolutionFolder, DirectoryInfo directory)
     {
-        var directory = new DirectoryInfo(path);
-
         foreach (var file in directory.EnumerateFiles())
         {
-
+            if (parentSolutionFolder.Files.All(f => f.Name != file.Name))
+            {
+                parentSolutionFolder.Files.Add(file);
+            }
         }
         foreach (var folder in directory.EnumerateDirectories())
         {
-
+            var slnFolder = FindOrCreateSolutionFolder(parentSolutionFolder.Projects, folder.Name, $"{folder.Name}/");
+            SyncFolder(slnFolder, folder);
         }
 
         // todo
@@ -88,10 +90,10 @@ public class Program
         // solution.Projects.Add(solutionFolder);
     }
 
-    private static SolutionFolder FindOrCreateSolutionItems(ICollection<IProject> solutionProjects,
+    private static SolutionFolder FindOrCreateSolutionFolder(ICollection<IProject> solutionProjects,
         string solutionFolderName, string path)
     {
-        var solutionItems = FindSolutionItems(solutionProjects, solutionFolderName);
+        var solutionItems = FindSolutionFolder(solutionProjects, solutionFolderName);
         if (solutionItems is not null)
         {
             return solutionItems;
@@ -104,6 +106,6 @@ public class Program
         return solutionItems;
     }
 
-    private static SolutionFolder? FindSolutionItems(IEnumerable<IProject> solutionProjects, string folderName)
+    private static SolutionFolder? FindSolutionFolder(IEnumerable<IProject> solutionProjects, string folderName)
         => solutionProjects.OfType<SolutionFolder>().FirstOrDefault(project => project.Name == folderName);
 }

@@ -10,7 +10,7 @@ public class IntegrationTests(ITestOutputHelper output)
     public void ModifiesSln()
     {
         var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        output.WriteLine($"Temp path {tmp}");
+        output.WriteLine($"Temp path:\r\n{tmp}");
         Directory.CreateDirectory(tmp);
         Directory.SetCurrentDirectory(tmp);
         const string sln = @"
