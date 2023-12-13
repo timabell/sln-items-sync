@@ -49,9 +49,9 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 
 		foreach (var path in paths)
 		{
-			if (File.Exists(path) && solutionItems.Files.All(f => f != path))
+			if (File.Exists(path))
 			{
-				solutionItems.Files.Add(path);
+				SyncFile(solutionItems, path);
 			}
 			else if (Directory.Exists(path))
 			{
@@ -66,6 +66,14 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 
 		var updatedSln = solution.Write();
 		File.WriteAllText(slnPath, updatedSln);
+	}
+
+	private static void SyncFile(SolutionFolder solutionItems, string path)
+	{
+		if (solutionItems.Files.All(f => f != path))
+		{
+			solutionItems.Files.Add(path);
+		}
 	}
 
 	private void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory, string path)
