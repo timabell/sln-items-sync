@@ -30,7 +30,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		}
 
 		parserResult
-			.WithParsed(opts => SyncPaths(slnPath: opts.SlnPath, opts.Paths));
+			.WithParsed(opts => SyncSlnFile(slnPath: opts.SlnPath, opts.Paths));
 		return 0;
 	}
 
@@ -41,9 +41,18 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 	/// </summary>
 	/// <param name="slnPath">relative path to sln file to modify</param>
 	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
-	public void SyncPaths(string slnPath, IEnumerable<string> paths)
+	public void SyncSlnFile(string slnPath, IEnumerable<string> paths)
 	{
-		var solution = _parser.Parse(slnPath);
+		var contents = File.ReadAllText(slnPath);
+		var updatedSln = SyncSlnText(contents, paths);
+		File.WriteAllText(slnPath, updatedSln);
+	}
+
+	// todo: allow mocking filesystem calls
+	// todo: move to sensible files
+	public string SyncSlnText(string contents, IEnumerable<string> paths)
+	{
+		var solution = _parser.ParseText(contents);
 
 		var solutionItems = FindOrCreateSolutionFolder(solution.Projects, SolutionItemsName, SolutionItemsName);
 
@@ -65,7 +74,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 
 
 		var updatedSln = solution.Write();
-		File.WriteAllText(slnPath, updatedSln);
+		return updatedSln;
 	}
 
 	private static void SyncFile(SolutionFolder solutionItems, string path)
