@@ -1,5 +1,6 @@
 using FluentAssertions;
 using sln_items_sync;
+using SystemWrapper.IO;
 using Xunit.Abstractions;
 
 namespace tests;
@@ -75,7 +76,8 @@ Global
 EndGlobal
 ";
 
-		new CLI(fakeGuidGenerator).Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
+		new CLI(new FileWrap(), new DirectoryWrap(), fakeGuidGenerator)
+			.Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
 
 		var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
 		actual.Should().Be(expected);

@@ -2,10 +2,11 @@ using CommandLine;
 using SlnEditor;
 using SlnEditor.Contracts;
 using SlnEditor.Helper;
+using SystemInterface.IO;
 
 namespace sln_items_sync;
 
-public class CLI(IGuidGenerator? guidGenerator = null)
+public class CLI(IFile file, IDirectory directory, IGuidGenerator? guidGenerator = null)
 {
 	private readonly IGuidGenerator _guidGenerator = guidGenerator ?? new DefaultGuidGenerator();
 	private const string SolutionItemsName = "SolutionItems";
@@ -43,9 +44,9 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
 	public void SyncSlnFile(string slnPath, IEnumerable<string> paths)
 	{
-		var contents = File.ReadAllText(slnPath);
+		var contents = file.ReadAllText(slnPath);
 		var updatedSln = SyncSlnText(contents, paths);
-		File.WriteAllText(slnPath, updatedSln);
+		file.WriteAllText(slnPath, updatedSln);
 	}
 
 	// todo: allow mocking filesystem calls
@@ -58,11 +59,11 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 
 		foreach (var path in paths)
 		{
-			if (File.Exists(path))
+			if (file.Exists(path))
 			{
 				SyncFile(solutionItems, path);
 			}
-			else if (Directory.Exists(path))
+			else if (directory.Exists(path))
 			{
 				SyncFolder(solutionItems, new DirectoryInfo(path), $"{path}\\");
 			}
