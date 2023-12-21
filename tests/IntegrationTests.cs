@@ -81,12 +81,3 @@ EndGlobal
 		actual.Should().Be(expected);
 	}
 }
-
-public class FakeGuidGenerator : IGuidGenerator
-{
-	public readonly Queue<Guid> Guids = new();
-	public Guid Next()
-	{
-		return Guids.Dequeue();
-	}
-}
