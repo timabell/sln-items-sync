@@ -74,8 +74,6 @@ Global
 	EndGlobalSection
 EndGlobal
 ";
-		File.WriteAllText(Path.Combine(tmp, "expected.sln"), expected);
-
 
 		new CLI(fakeGuidGenerator).Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
 
