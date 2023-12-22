@@ -4,9 +4,18 @@ namespace tests;
 
 public class FakeGuidGenerator : IGuidGenerator
 {
-	public readonly Queue<Guid> Guids = new();
+	public FakeGuidGenerator(IEnumerable<string> guidsToReturn)
+	{
+		foreach (var guid in guidsToReturn)
+		{
+			_guids.Enqueue(new Guid(guid));
+		}
+	}
+
+	private readonly Queue<Guid> _guids = new();
+
 	public Guid Next()
 	{
-		return Guids.Dequeue();
+		return _guids.Dequeue();
 	}
 }

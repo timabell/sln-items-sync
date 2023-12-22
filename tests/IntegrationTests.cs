@@ -4,16 +4,36 @@ using Xunit.Abstractions;
 
 namespace tests;
 
-public class IntegrationTests(ITestOutputHelper output)
+public class IntegrationTests
 {
-	[Fact]
-	public void ModifiesSln()
+	private const string TargetSlnFile = "target.sln";
+	private readonly CLI _cli;
+	private readonly string _testFolder;
+
+	private static readonly string[] GuidsToReturn =
 	{
-		var tmp = Path.Combine(Path.GetTempPath(), "sln-items-sync-tests", Guid.NewGuid().ToString());
-		output.WriteLine($"Temp path:\r\n{tmp}");
-		Directory.CreateDirectory(tmp);
-		Directory.SetCurrentDirectory(tmp);
-		const string sln = @"
+		// deterministic GUID list for tests so we can assert against a fixed expected sln contents
+		"17591C35-3F90-4F4A-AA13-45CF8D824066",
+		"CF942CDD-19AC-4E52-9C6E-B1381E0406D9",
+		"F5636E74-888A-4FBD-A8E2-9718A05D90BD",
+		"D6CA39BB-4B2F-4AF7-94B9-D1269AE037D3",
+		"5B009B7F-333C-469A-AB3D-24E29C18C544",
+	};
+
+	public IntegrationTests(ITestOutputHelper output)
+	{
+		_cli = new CLI(new FakeGuidGenerator(GuidsToReturn));
+		_testFolder = Path.Combine(Path.GetTempPath(), "sln-items-sync-tests", Guid.NewGuid().ToString());
+		output.WriteLine($"Test filesystem path:\r\n{_testFolder}");
+		Directory.CreateDirectory(_testFolder);
+		Directory.SetCurrentDirectory(_testFolder);
+	}
+
+	[Fact]
+	public void AddsToBlankSln()
+	{
+		// Arrange
+		SetupSln(@"
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -29,18 +49,18 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
-";
-		File.WriteAllText(Path.Combine(tmp, "original.sln"), sln);
-		File.WriteAllText(Path.Combine(tmp, "target.sln"), sln);
-		File.WriteAllText(Path.Combine(tmp, "rootfile.txt"), "");
-		Directory.CreateDirectory(Path.Combine(tmp, "subfolder", "nested_folder"));
-		File.WriteAllText(Path.Combine(tmp, "subfolder", "nested_folder", "nested_file.txt"), "");
+");
 
-		var fakeGuidGenerator = new FakeGuidGenerator();
-		fakeGuidGenerator.Guids.Enqueue(new Guid("{17591C35-3F90-4F4A-AA13-45CF8D824066}"));
-		fakeGuidGenerator.Guids.Enqueue(new Guid("{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}"));
-		fakeGuidGenerator.Guids.Enqueue(new Guid("{F5636E74-888A-4FBD-A8E2-9718A05D90BD}"));
+		SetupFilesystem(new[]
+		{
+			"rootfile.txt",
+			"subfolder/nested_folder/nested_file.txt",
+		});
 
+		// Act
+		_cli.Run(new[] { "-s", TargetSlnFile, "rootfile.txt", "subfolder" });
+
+		// Assert
 		const string expected = @"
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
@@ -75,9 +95,33 @@ Global
 EndGlobal
 ";
 
-		new CLI(fakeGuidGenerator).Run(new[] { "-s", "target.sln", "rootfile.txt", "subfolder" });
+		ModifiedSln().Should().Be(expected);
+	}
 
-		var actual = File.ReadAllText(Path.Combine(tmp, "target.sln"));
-		actual.Should().Be(expected);
+	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
+
+	private void SetupFilesystem(IEnumerable<string> paths)
+	{
+		foreach (var path in paths)
+		{
+			SetupFile(path);
+		}
+	}
+
+	private void SetupFile(string path)
+	{
+		var directory = Path.GetDirectoryName(path);
+		if (!string.IsNullOrEmpty(directory))
+		{
+			Directory.CreateDirectory(directory);
+		}
+
+		File.WriteAllText(Path.Combine(_testFolder, path), contents: "");
+	}
+
+	private void SetupSln(string slnContents)
+	{
+		File.WriteAllText(Path.Combine(_testFolder, "original.sln"), slnContents);
+		File.WriteAllText(Path.Combine(_testFolder, TargetSlnFile), slnContents);
 	}
 }
