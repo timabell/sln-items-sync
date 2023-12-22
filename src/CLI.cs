@@ -8,8 +8,6 @@ namespace sln_items_sync;
 public class CLI(IGuidGenerator? guidGenerator = null)
 {
 	private readonly IGuidGenerator _guidGenerator = guidGenerator ?? new DefaultGuidGenerator();
-	private const string SolutionItemsName = "SolutionItems";
-	private const char SlnItemPathSeparator = '\\';
 	private static SolutionParser _parser = new();
 	private static Guid _solutionFolderTypeGuid = new ProjectTypeMapper().ToGuid(ProjectType.SolutionFolder);
 
@@ -17,6 +15,9 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 	{
 		[Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
 		public string SlnPath { get; set; }
+
+		[Option('f', "folder", Required = false, HelpText = "Solution folder to target")]
+		public string SlnFolder { get; set; } = "SolutionItems";
 
 		[Value(0)]
 		public IEnumerable<string> Paths { get; set; }
@@ -31,7 +32,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		}
 
 		parserResult
-			.WithParsed(opts => SyncSlnFile(slnPath: opts.SlnPath, opts.Paths));
+			.WithParsed(opts => SyncSlnFile(slnPath: opts.SlnPath, slnFolder: opts.SlnFolder, opts.Paths));
 		return 0;
 	}
 
@@ -41,21 +42,22 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 	/// - folders will be forced to recursively match the filesystem
 	/// </summary>
 	/// <param name="slnPath">relative path to sln file to modify</param>
+	/// <param name="slnFolder"></param>
 	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
-	public void SyncSlnFile(string slnPath, IEnumerable<string> paths)
+	public void SyncSlnFile(string slnPath, string slnFolder, IEnumerable<string> paths)
 	{
 		var contents = File.ReadAllText(slnPath);
-		var updatedSln = SyncSlnText(contents, paths);
+		var updatedSln = SyncSlnText(contents, slnFolder, paths);
 		File.WriteAllText(slnPath, updatedSln);
 	}
 
 	// todo: allow mocking filesystem calls
 	// todo: move to sensible files
-	public string SyncSlnText(string contents, IEnumerable<string> paths)
+	public string SyncSlnText(string contents, string slnFolder, IEnumerable<string> paths)
 	{
 		var solution = _parser.ParseText(contents);
 
-		var solutionItems = FindOrCreateSolutionFolder(solution.Projects, SolutionItemsName, SolutionItemsName);
+		var solutionItems = FindOrCreateSolutionFolder(solution.Projects, slnFolder, slnFolder);
 
 		foreach (var path in paths)
 		{
