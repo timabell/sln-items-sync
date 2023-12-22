@@ -9,6 +9,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 {
 	private readonly IGuidGenerator _guidGenerator = guidGenerator ?? new DefaultGuidGenerator();
 	private const string SolutionItemsName = "SolutionItems";
+	private const char SlnItemPathSeparator = '\\';
 	private static SolutionParser _parser = new();
 	private static Guid _solutionFolderTypeGuid = new ProjectTypeMapper().ToGuid(ProjectType.SolutionFolder);
 
@@ -88,12 +89,18 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 	private void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory, string path)
 	{
 		var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, directory.Name, directory.Name);
-		foreach (var file in directory.EnumerateFiles())
+		var files = directory.GetFiles();
+		foreach (var file in files)
 		{
-			if (solutionFolder.Files.All(f => f.Split('\\').Last() != file.Name))
+			if (solutionFolder.Files.Select(f => f.SlnItemName()).All(f => f != file.Name))
 			{
 				solutionFolder.Files.Add($"{path}{file.Name}");
 			}
+		}
+		var unwanted = solutionFolder.Files.Where(f => files.All(file => file.Name != f.SlnItemName())).ToList();
+		foreach (var file in unwanted)
+		{
+			solutionFolder.Files.Remove(file);
 		}
 		foreach (var subDirectory in directory.EnumerateDirectories())
 		{
@@ -132,4 +139,14 @@ public class DefaultGuidGenerator : IGuidGenerator
 public interface IGuidGenerator
 {
 	Guid Next();
+}
+
+public static class StringExtensions
+{
+	/// <summary>
+	/// Get filename from path in solution items (hard-coded to backslash, so can't use Path.GetFileName)
+	/// </summary>
+	/// <param name="slnPath"></param>
+	/// <returns></returns>
+	public static string SlnItemName(this string slnPath) => slnPath.Split('\\').Last();
 }
