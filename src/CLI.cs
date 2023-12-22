@@ -99,13 +99,6 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		{
 			SyncFolder(solutionFolder, subDirectory, $"{path}{subDirectory.Name}\\");
 		}
-
-		// todo
-		// var solutionFolder = new SolutionFolder(Guid.NewGuid(), "foo", "foo/", _solutionFolderTypeGuid, ProjectType.SolutionFolder);
-		//
-		// var nestedSolutionFolder = new SolutionFolder(Guid.NewGuid(), "bar", "bar/", _solutionFolderTypeGuid, ProjectType.SolutionFolder);
-		// solutionFolder.Projects.Add(nestedSolutionFolder);
-		// solution.Projects.Add(solutionFolder);
 	}
 
 	private SolutionFolder FindOrCreateSolutionFolder(ICollection<IProject> solutionProjects,
