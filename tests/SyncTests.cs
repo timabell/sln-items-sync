@@ -1,5 +1,7 @@
 using FluentAssertions;
+using NSubstitute;
 using sln_items_sync;
+using SystemInterface.IO;
 using SystemWrapper.IO;
 using Xunit.Abstractions;
 
@@ -27,10 +29,13 @@ Global
 	EndGlobalSection
 EndGlobal
 ";
-		// todo fake files
-		// File.WriteAllText(Path.Combine(tmp, "original.sln"), sln);
-		// File.WriteAllText(Path.Combine(tmp, "target.sln"), sln);
-		// File.WriteAllText(Path.Combine(tmp, "rootfile.txt"), "");
+
+		var fileFake = Substitute.For<IFile>();
+		// fileFake.Exists("original.sln").Returns(true);
+		// fileFake.Exists("target.sln").Returns(true);
+		fileFake.Exists("rootfile.txt").Returns(true);
+		var dirFake = Substitute.For<IDirectory>();
+		dirFake.Exists("subfolder").Returns(true);
 		// Directory.CreateDirectory(Path.Combine(tmp, "subfolder", "nested_folder"));
 		// File.WriteAllText(Path.Combine(tmp, "subfolder", "nested_folder", "nested_file.txt"), "");
 
@@ -73,7 +78,7 @@ Global
 EndGlobal
 ";
 
-		var actual = new CLI(new FileWrap(), new DirectoryWrap(), fakeGuidGenerator)
+		var actual = new CLI(fileFake, dirFake, fakeGuidGenerator)
 			.SyncSlnText(contents: input, paths: new[] { "rootfile.txt", "subfolder" });
 
 		actual.Should().Be(expected);

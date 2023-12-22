@@ -49,7 +49,6 @@ public class CLI(IFile file, IDirectory directory, IGuidGenerator? guidGenerator
 		file.WriteAllText(slnPath, updatedSln);
 	}
 
-	// todo: allow mocking filesystem calls
 	// todo: move to sensible files
 	public string SyncSlnText(string contents, IEnumerable<string> paths)
 	{
@@ -65,7 +64,7 @@ public class CLI(IFile file, IDirectory directory, IGuidGenerator? guidGenerator
 			}
 			else if (directory.Exists(path))
 			{
-				SyncFolder(solutionItems, new DirectoryInfo(path), $"{path}\\");
+				SyncFolder(solutionItems, dir: path, path: $"{path}\\");
 			}
 			else
 			{
@@ -86,19 +85,19 @@ public class CLI(IFile file, IDirectory directory, IGuidGenerator? guidGenerator
 		}
 	}
 
-	private void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory, string path)
+	private void SyncFolder(SolutionFolder parentFolder, string dir, string path)
 	{
-		var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, directory.Name, directory.Name);
-		foreach (var file in directory.EnumerateFiles())
+		var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, dir, dir);
+		foreach (var file in directory.EnumerateFiles(dir))
 		{
-			if (solutionFolder.Files.All(f => f != file.Name))
+			if (solutionFolder.Files.All(f => f != file))
 			{
-				solutionFolder.Files.Add($"{path}{file.Name}");
+				solutionFolder.Files.Add($"{path}{file}");
 			}
 		}
-		foreach (var subDirectory in directory.EnumerateDirectories())
+		foreach (var subDirectory in directory.GetDirectories(dir))
 		{
-			SyncFolder(solutionFolder, subDirectory, $"{path}{subDirectory.Name}\\");
+			SyncFolder(solutionFolder, subDirectory, $"{path}{subDirectory}\\");
 		}
 
 		// todo
