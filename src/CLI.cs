@@ -17,7 +17,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		[Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
 		public string SlnPath { get; set; }
 
-		[CommandLine.Value(0)]
+		[Value(0)]
 		public IEnumerable<string> Paths { get; set; }
 	}
 

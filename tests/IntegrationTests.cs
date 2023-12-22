@@ -11,14 +11,14 @@ public class IntegrationTests
 	private readonly string _testFolder;
 
 	private static readonly string[] GuidsToReturn =
-	{
+	[
 		// deterministic GUID list for tests so we can assert against a fixed expected sln contents
 		"17591C35-3F90-4F4A-AA13-45CF8D824066",
 		"CF942CDD-19AC-4E52-9C6E-B1381E0406D9",
 		"F5636E74-888A-4FBD-A8E2-9718A05D90BD",
 		"D6CA39BB-4B2F-4AF7-94B9-D1269AE037D3",
 		"5B009B7F-333C-469A-AB3D-24E29C18C544",
-	};
+	];
 
 	public IntegrationTests(ITestOutputHelper output)
 	{
@@ -53,12 +53,12 @@ EndGlobal
 
 		SetupFilesystem(new[]
 		{
-			"rootfile.txt",
+			"root-file.txt",
 			"subfolder/nested_folder/nested_file.txt",
 		});
 
 		// Act
-		_cli.Run(new[] { "-s", TargetSlnFile, "rootfile.txt", "subfolder" });
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
 
 		// Assert
 		const string expected = @"
@@ -68,7 +68,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
 	ProjectSection(SolutionItems) = preProject
-		rootfile.txt = rootfile.txt
+		root-file.txt = root-file.txt
 	EndProjectSection
 EndProject
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder"", ""{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}""
@@ -109,7 +109,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
 	ProjectSection(SolutionItems) = preProject
-		rootfile.txt = rootfile.txt
+		root-file.txt = root-file.txt
 	EndProjectSection
 EndProject
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder"", ""{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}""
@@ -138,12 +138,12 @@ EndGlobal
 
 		SetupFilesystem(new[]
 		{
-			"rootfile.txt",
+			"root-file.txt",
 			"subfolder/nested_folder/nested_file.txt",
 		});
 
 		// Act
-		_cli.Run(new[] { "-s", TargetSlnFile, "rootfile.txt", "subfolder" });
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
 
 		// Assert
 		const string expected = @"
@@ -153,7 +153,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
 	ProjectSection(SolutionItems) = preProject
-		rootfile.txt = rootfile.txt
+		root-file.txt = root-file.txt
 	EndProjectSection
 EndProject
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder"", ""{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}""
