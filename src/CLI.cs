@@ -1,15 +1,13 @@
 using CommandLine;
-using SlnEditor;
-using SlnEditor.Contracts;
-using SlnEditor.Helper;
+using SlnEditor.Mappings;
+using SlnEditor.Models;
 
 namespace sln_items_sync;
 
 public class CLI(IGuidGenerator? guidGenerator = null)
 {
 	private readonly IGuidGenerator _guidGenerator = guidGenerator ?? new DefaultGuidGenerator();
-	private static SolutionParser _parser = new();
-	private static Guid _solutionFolderTypeGuid = new ProjectTypeMapper().ToGuid(ProjectType.SolutionFolder);
+	private static readonly Guid SolutionFolderTypeGuid = new ProjectTypeMap().Guids[ProjectType.SolutionFolder];
 
 	public class Options
 	{
@@ -51,11 +49,10 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		File.WriteAllText(slnPath, updatedSln);
 	}
 
-	// todo: allow mocking filesystem calls
 	// todo: move to sensible files
 	public string SyncSlnText(string contents, string slnFolder, IEnumerable<string> paths)
 	{
-		var solution = _parser.ParseText(contents);
+		var solution = new Solution(contents);
 
 		var solutionItems = FindOrCreateSolutionFolder(solution.Projects, slnFolder, slnFolder);
 
@@ -76,8 +73,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		}
 
 
-		var updatedSln = solution.Write();
-		return updatedSln;
+		return solution.ToString();
 	}
 
 	private static void SyncFile(SolutionFolder solutionItems, string path)
@@ -120,7 +116,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		}
 
 		solutionItems = new SolutionFolder(id: _guidGenerator.Next(), name: solutionFolderName, path: path,
-			typeGuid: _solutionFolderTypeGuid, ProjectType.SolutionFolder);
+			typeGuid: SolutionFolderTypeGuid, ProjectType.SolutionFolder);
 		solutionProjects.Add(solutionItems);
 
 		return solutionItems;
