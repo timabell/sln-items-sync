@@ -90,7 +90,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 		var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, directory.Name, directory.Name);
 		foreach (var file in directory.EnumerateFiles())
 		{
-			if (solutionFolder.Files.All(f => f != file.Name))
+			if (solutionFolder.Files.All(f => f.Split('\\').Last() != file.Name))
 			{
 				solutionFolder.Files.Add($"{path}{file.Name}");
 			}
