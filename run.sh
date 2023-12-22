@@ -1,1 +1,2 @@
-dotnet run -p src/sln-items-sync.csproj tests/data/example.sln
+#!/bin/sh -v
+dotnet run --project src/sln-items-sync.csproj --solution sln-items-sync.sln run.sh .github
