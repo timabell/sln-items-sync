@@ -115,8 +115,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 			return solutionItems;
 		}
 
-		solutionItems = new SolutionFolder(id: _guidGenerator.Next(), name: solutionFolderName, path: path,
-			typeGuid: SolutionFolderTypeGuid, ProjectType.SolutionFolder);
+		solutionItems = new SolutionFolder(id: _guidGenerator.Next(), name: solutionFolderName, path: path);
 		solutionProjects.Add(solutionItems);
 
 		return solutionItems;
