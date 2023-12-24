@@ -324,6 +324,7 @@ Global
 	EndGlobalSection
 EndGlobal
 ";
+		File.WriteAllText(Path.Combine(_testFolder, "expected.sln"), expected); // for kdiff debugging
 
 		ModifiedSln().Should().Be(expected);
 	}
