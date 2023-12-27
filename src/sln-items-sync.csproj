@@ -11,6 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="SlnEditor" Version="5.0.1" />
+    <PackageReference Include="SlnEditor" Version="6.0.0" />
   </ItemGroup>
 </Project>
