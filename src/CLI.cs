@@ -54,7 +54,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 	{
 		var solution = new Solution(contents);
 
-		var solutionItems = FindOrCreateSolutionFolder(solution.Projects, slnFolder, slnFolder);
+		var solutionItems = FindOrCreateSolutionFolder(solution.RootProjects, slnFolder, slnFolder);
 
 		foreach (var path in paths)
 		{
@@ -115,7 +115,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 			return solutionItems;
 		}
 
-		solutionItems = new SolutionFolder(id: _guidGenerator.Next(), name: solutionFolderName, path: path);
+		solutionItems = new SolutionFolder(id: _guidGenerator.Next(), name: solutionFolderName);
 		solutionProjects.Add(solutionItems);
 
 		return solutionItems;
