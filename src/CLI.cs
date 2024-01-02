@@ -8,7 +8,7 @@ public class CLI(IGuidGenerator? guidGenerator = null)
 {
 	private readonly IGuidGenerator _guidGenerator = guidGenerator ?? new DefaultGuidGenerator();
 
-	public class Options
+	private class Options
 	{
 		[Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
 		public string SlnPath { get; set; }
