@@ -7,7 +7,6 @@ namespace sln_items_sync;
 public class CLI(IGuidGenerator? guidGenerator = null)
 {
 	private readonly IGuidGenerator _guidGenerator = guidGenerator ?? new DefaultGuidGenerator();
-	private static readonly Guid SolutionFolderTypeGuid = new ProjectTypeMap().Guids[ProjectType.SolutionFolder];
 
 	public class Options
 	{
