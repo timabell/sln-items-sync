@@ -2,18 +2,10 @@ using SlnEditor.Models;
 
 namespace sln_items_sync;
 
-public class SlnSync
+public class SlnSync(IGuidGenerator guidGenerator)
 {
-	private readonly IGuidGenerator _guidGenerator;
-
-	public SlnSync()
+	public SlnSync() : this(new DefaultGuidGenerator())
 	{
-		_guidGenerator = new DefaultGuidGenerator();
-	}
-
-	public SlnSync(IGuidGenerator guidGenerator)
-	{
-		_guidGenerator = guidGenerator;
 	}
 
 	/// <summary>
@@ -100,7 +92,7 @@ public class SlnSync
 			return solutionItems;
 		}
 
-		solutionItems = new SolutionFolder(id: _guidGenerator.Next(), name: solutionFolderName);
+		solutionItems = new SolutionFolder(id: guidGenerator.Next(), name: solutionFolderName);
 		solutionProjects.Add(solutionItems);
 
 		return solutionItems;
