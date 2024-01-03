@@ -1,3 +1,4 @@
+using System.Text;
 using SlnEditor.Models;
 
 namespace sln_items_sync;
@@ -20,7 +21,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	{
 		var contents = File.ReadAllText(slnPath);
 		var updatedSln = SyncSlnText(contents, slnFolder, paths);
-		File.WriteAllText(slnPath, updatedSln);
+		File.WriteAllText(slnPath, updatedSln, Encoding.UTF8); // explicit UTF-8 to get byte-order marker (which sln files seem to have)
 	}
 
 	public string SyncSlnText(string contents, string slnFolder, IEnumerable<string> paths)

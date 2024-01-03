@@ -403,6 +403,41 @@ EndGlobal
 		ModifiedSln().Should().Be(expected);
 	}
 
+	[Fact]
+	public void AddsBOM()
+	{
+		// Arrange
+		SetupSln(@"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+");
+
+		// Act
+		_cli.Run(["-s", TargetSlnFile]);
+
+		File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
+
+		// https://stackoverflow.com/questions/5012167/how-can-i-detect-if-a-net-streamreader-found-a-utf8-bom-on-the-underlying-strea/5012344#5012344
+		using var fs = new FileStream(Path.Combine(_testFolder, TargetSlnFile), FileMode.Open);
+		byte[] bits = new byte[3];
+		fs.Read(bits, 0, 3);
+		var filePreamble = "0x" + Convert.ToHexString(bits);
+		filePreamble.Should().Be("0xEFBBBF");
+	}
+
 	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
 	private void SetupFilesystem(IEnumerable<string> paths)
