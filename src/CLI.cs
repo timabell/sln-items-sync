@@ -41,26 +41,3 @@ public class CLI
 		return 0;
 	}
 }
-
-public class DefaultGuidGenerator : IGuidGenerator
-{
-	public Guid Next()
-	{
-		return Guid.NewGuid();
-	}
-}
-
-public interface IGuidGenerator
-{
-	Guid Next();
-}
-
-public static class StringExtensions
-{
-	/// <summary>
-	/// Get filename from path in solution items (hard-coded to backslash, so can't use Path.GetFileName)
-	/// </summary>
-	/// <param name="slnPath"></param>
-	/// <returns></returns>
-	public static string SlnItemName(this string slnPath) => slnPath.Split('\\').Last();
-}
