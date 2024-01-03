@@ -29,7 +29,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 
 		var solutionItems = FindOrCreateSolutionFolder(solution.RootProjects, slnFolder);
 
-		foreach (var path in paths)
+		foreach (var path in paths.Select(Path.TrimEndingDirectorySeparator))
 		{
 			if (File.Exists(path))
 			{

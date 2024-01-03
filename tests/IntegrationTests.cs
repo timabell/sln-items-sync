@@ -337,6 +337,72 @@ EndGlobal
 		ModifiedSln().Should().Be(expected);
 	}
 
+	[Fact]
+	public void PathSanitization()
+	{
+		// Arrange
+		SetupSln(@"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+");
+
+		SetupFilesystem(new[]
+		{
+			"root-file.txt",
+			"subfolder/nested_file.txt",
+		});
+
+		// Act
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder/"]);
+
+		// Assert
+		const string expected = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+	ProjectSection(SolutionItems) = preProject
+		root-file.txt = root-file.txt
+	EndProjectSection
+EndProject
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder"", ""{CF942CDD-19AC-4E52-9C6E-B1381E0406D9}""
+	ProjectSection(SolutionItems) = preProject
+		subfolder\nested_file.txt = subfolder\nested_file.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF942CDD-19AC-4E52-9C6E-B1381E0406D9} = {17591C35-3F90-4F4A-AA13-45CF8D824066}
+	EndGlobalSection
+EndGlobal
+";
+
+		File.WriteAllText(Path.Combine(_testFolder, "expected.sln"), expected); // for kdiff debugging
+
+		ModifiedSln().Should().Be(expected);
+	}
+
 	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
 	private void SetupFilesystem(IEnumerable<string> paths)
