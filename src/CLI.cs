@@ -24,7 +24,8 @@ public class CLI
 		[Option('f', "folder", Required = false, HelpText = "Solution folder to target")]
 		public string SlnFolder { get; set; } = "SolutionItems";
 
-		[Value(0)] public IEnumerable<string> Paths { get; set; }
+		[Value(0)]
+		public IEnumerable<string> Paths { get; set; }
 	}
 
 	public int Run(string[] args)
