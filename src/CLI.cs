@@ -29,7 +29,7 @@ public class CLI
 
 	public int Run(string[] args)
 	{
-		var parserResult = Parser.Default.ParseArguments<CLI.Options>(args);
+		var parserResult = Parser.Default.ParseArguments<Options>(args);
 		if (parserResult.Errors.Any())
 		{
 			return 1;
@@ -38,6 +38,7 @@ public class CLI
 		parserResult
 			.WithParsed(opts =>
 				_slnSync.SyncSlnFile(slnPath: opts.SlnPath, slnFolder: opts.SlnFolder, opts.Paths));
+
 		return 0;
 	}
 }
