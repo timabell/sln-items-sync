@@ -9,6 +9,22 @@
     <SelfContained>false</SelfContained>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>sln-items-sync</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>sln-items-sync</ToolCommandName>
+
+    <Authors>Tim Abell and Contributors</Authors>
+    <Description>
+      Run this against a .sln file with a list of paths and it will update the solution items to match
+    </Description>
+    <PackageProjectUrl>https://github.com/timabell/sln-items-sync</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/timabell/sln-items-sync</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>dotnet;CLI;Tool;Solution;Sync;Items</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="SlnEditor" Version="6.1.0" />
