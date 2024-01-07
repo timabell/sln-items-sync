@@ -2,10 +2,16 @@
 
 Run this against a `.sln` file with a list of paths and it will update the solution items to match
 
+Install
+
+dotnet tool install --global sln-items-sync
+
+You'll need `~/.dotnet/tools` on the PATH if it isn't already.
+
 Usage
 
 ```
-dotnet run --project src/sln-items-sync.csproj --solution sln-items-sync.sln README.md .github
+sln-items-sync --solution sln-items-sync.sln README.md .github
 ```
 
 Files will be added if missing.
