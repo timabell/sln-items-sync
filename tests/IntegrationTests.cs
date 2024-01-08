@@ -438,6 +438,89 @@ EndGlobal
 		filePreamble.Should().Be("0xEFBBBF");
 	}
 
+	[Fact]
+	public void RemovesEmptyFolder()
+	{
+		// Arrange
+		SetupSln(@"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{80BB2C30-4476-40A5-9362-81EB66FACAD8}""
+EndProject
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder"", ""{96EAD0E2-587F-40D7-8360-460DDCB0EA01}""
+EndProject
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""delete_me"", ""delete_me"", ""{1A8D3B96-F71E-4E09-B64D-65822C9A3FC9}""
+	ProjectSection(SolutionItems) = preProject
+		subfolder\delete_me\nested_file.txt = subfolder\delete_me\nested_file.txt
+	EndProjectSection
+EndProject
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""unchanged_nested_folder"", ""unchanged_nested_folder"", ""{CB69AA4E-8335-4347-B098-8DD404B7B736}""
+	ProjectSection(SolutionItems) = preProject
+		subfolder\unchanged_nested_folder\nested_file.txt = subfolder\unchanged_nested_folder\nested_file.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{96EAD0E2-587F-40D7-8360-460DDCB0EA01} = {80BB2C30-4476-40A5-9362-81EB66FACAD8}
+		{1A8D3B96-F71E-4E09-B64D-65822C9A3FC9} = {96EAD0E2-587F-40D7-8360-460DDCB0EA01}
+		{CB69AA4E-8335-4347-B098-8DD404B7B736} = {96EAD0E2-587F-40D7-8360-460DDCB0EA01}
+	EndGlobalSection
+EndGlobal
+");
+
+		SetupFilesystem(new[]
+		{
+			// "subfolder/delete_me/nested_file.txt", // deleted
+			"subfolder/unchanged_nested_folder/nested_file.txt",
+		});
+
+		// Act
+		_cli.Run(["-s", TargetSlnFile, "subfolder"]);
+
+		// Assert
+		const string expected = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{80BB2C30-4476-40A5-9362-81EB66FACAD8}""
+EndProject
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""subfolder"", ""subfolder"", ""{96EAD0E2-587F-40D7-8360-460DDCB0EA01}""
+EndProject
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""unchanged_nested_folder"", ""unchanged_nested_folder"", ""{CB69AA4E-8335-4347-B098-8DD404B7B736}""
+	ProjectSection(SolutionItems) = preProject
+		subfolder\unchanged_nested_folder\nested_file.txt = subfolder\unchanged_nested_folder\nested_file.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{96EAD0E2-587F-40D7-8360-460DDCB0EA01} = {80BB2C30-4476-40A5-9362-81EB66FACAD8}
+		{CB69AA4E-8335-4347-B098-8DD404B7B736} = {96EAD0E2-587F-40D7-8360-460DDCB0EA01}
+	EndGlobalSection
+EndGlobal
+";
+
+		File.WriteAllText(Path.Combine(_testFolder, "expected.sln"), expected); // for kdiff debugging
+
+		ModifiedSln().Should().Be(expected);
+	}
+
 	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
 	private void SetupFilesystem(IEnumerable<string> paths)

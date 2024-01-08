@@ -78,9 +78,18 @@ public class SlnSync(IGuidGenerator guidGenerator)
 			solutionFolder.Files.Remove(file);
 		}
 
-		foreach (var subDirectory in directory.EnumerateDirectories())
+		var directories = directory.GetDirectories();
+		foreach (var subDirectory in directories)
 		{
 			SyncFolder(solutionFolder, subDirectory, $"{path}{subDirectory.Name}\\");
+		}
+
+		var unwantedFolders = solutionFolder.Projects.OfType<SolutionFolder>()
+			.Where(f => directories.All(file => file.Name != f.Name)).ToList();
+
+		foreach (var folder in unwantedFolders)
+		{
+			solutionFolder.Projects.Remove(folder);
 		}
 	}
 
