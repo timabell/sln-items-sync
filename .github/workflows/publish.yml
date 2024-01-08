@@ -35,4 +35,4 @@ jobs:
       - name: Push to Nuget.org
         env:
           VERSION: ${{ steps.gen_version.outputs.VERSION }}
-        run: dotnet nuget push ./src/bin/Release/sln-items-sync.${{ env.VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./src/bin/Release/sln-items-sync.${{ env.VERSION }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
