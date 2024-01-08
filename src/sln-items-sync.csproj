@@ -11,7 +11,11 @@
     <ToolCommandName>sln-items-sync</ToolCommandName>
     <Company>Tim Abell</Company>
     <Product>sln-items-sync</Product>
-    <Version>1.0.3</Version>
+    <Authors>Tim Abell</Authors>
+    <RepositoryUrl>https://github.com/timabell/sln-items-sync</RepositoryUrl>
+    <PackageTags>.net c# solution sln</PackageTags>
+    <Description>dotnet tool / cli to synchronize SolutionItems folders with filesystem</Description>
+    <Version>1.1.1</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/timabell/sln-items-sync</RepositoryUrl>
     <PackageTags>.net c# solution sln tool</PackageTags>
