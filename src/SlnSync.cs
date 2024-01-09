@@ -85,7 +85,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 		}
 
 		var unwantedFolders = solutionFolder.Projects.OfType<SolutionFolder>()
-			.Where(f => directories.All(file => file.Name != f.Name)).ToList();
+			.Where(folder => directories.All(d => d.Name != folder.Name)).ToList();
 
 		foreach (var folder in unwantedFolders)
 		{
