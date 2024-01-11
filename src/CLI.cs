@@ -30,6 +30,9 @@ public class CLI
 
 	public int Run(string[] args)
 	{
+		Console.Out.WriteLine("https://github.com/timabell/sln-items-sync");
+		Console.Out.WriteLine("https://www.nuget.org/packages/sln-items-sync");
+		Console.Out.WriteLine("GPL v3.0 Licensed");
 		var parserResult = Parser.Default.ParseArguments<Options>(args);
 		if (parserResult.Errors.Any())
 		{
