@@ -32,7 +32,7 @@ public class CLI
 	{
 		Console.Out.WriteLine("https://github.com/timabell/sln-items-sync");
 		Console.Out.WriteLine("https://www.nuget.org/packages/sln-items-sync");
-		Console.Out.WriteLine("GPL v3.0 Licensed");
+		Console.Out.WriteLine("A-GPL v3 Licensed");
 		var parserResult = Parser.Default.ParseArguments<Options>(args);
 		if (parserResult.Errors.Any())
 		{
