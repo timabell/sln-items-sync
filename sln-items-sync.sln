@@ -15,6 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 		run.sh = run.sh
 		publish.sh = publish.sh
+		upgrade-dotnet.sh = upgrade-dotnet.sh
+		upgrade-nugets.sh = upgrade-nugets.sh
+		upgrades.sh = upgrades.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{50259428-AA36-4437-AF08-F1B4DFE0D580}"
