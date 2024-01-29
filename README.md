@@ -2,6 +2,9 @@
 
 Run this against a `.sln` file with a list of paths and it will update the solution items to match
 
+[![Latest Release](https://img.shields.io/nuget/v/sln-items-sync)](https://www.nuget.org/packages/sln-items-sync/)
+[![Downloads](https://img.shields.io/nuget/dt/sln-items-sync)](https://www.nuget.org/packages/sln-items-sync/)
+
 ## Install
 
 ```sh
