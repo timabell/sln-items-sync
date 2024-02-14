@@ -1,7 +1,8 @@
 #!/bin/sh -v
 set -e # exit on error
 asdf plugin update dotnet-core
-latest=`asdf list all dotnet-core | tail -n 1`
+# filter out -preview releases, and assume last one is newest
+latest=`asdf list all dotnet-core | grep -v "-" | tail -n 1`
 echo $latest
 asdf install dotnet-core $latest
 asdf local dotnet-core $latest
