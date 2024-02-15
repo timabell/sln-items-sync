@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using System.Text;
 using SlnEditor.Models;
 
@@ -19,6 +20,14 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
 	public void SyncSlnFile(string slnPath, string slnFolder, IEnumerable<string> paths)
 	{
+		if (!File.Exists(slnPath) || !slnPath.EndsWith(".sln"))
+		{
+			throw new InvalidSlnPathException($"'{slnPath}' is not a sln file");
+		}
+		if (!paths.Any())
+		{
+			throw new EmptyPathListException();
+		}
 		var contents = File.ReadAllText(slnPath);
 		var updatedSln = SyncSlnText(contents, slnFolder, paths);
 		File.WriteAllText(slnPath, updatedSln, Encoding.UTF8); // explicit UTF-8 to get byte-order marker (which sln files seem to have)
@@ -42,7 +51,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 			}
 			else
 			{
-				throw new Exception($"path not found: '{path}'");
+				throw new PathNotFoundException(path);
 			}
 		}
 
@@ -111,3 +120,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	private static SolutionFolder? FindSolutionFolder(IEnumerable<IProject> solutionProjects, string folderName)
 		=> solutionProjects.OfType<SolutionFolder>().FirstOrDefault(project => project.Name == folderName);
 }
+
+public class PathNotFoundException(string path) : Exception($"Path '{path}' not found");
+public class InvalidSlnPathException(string s) : Exception(s);
+public class EmptyPathListException() : Exception();

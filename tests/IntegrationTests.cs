@@ -425,8 +425,13 @@ Global
 EndGlobal
 ");
 
+		SetupFilesystem(new[]
+		{
+			"some-file.txt",
+		});
+
 		// Act
-		_cli.Run(["-s", TargetSlnFile]);
+		_cli.Run(["-s", TargetSlnFile, "some-file.txt"]);
 
 		File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 

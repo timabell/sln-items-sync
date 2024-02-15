@@ -30,19 +30,42 @@ public class CLI
 
 	public int Run(string[] args)
 	{
-		Console.Out.WriteLine("https://github.com/timabell/sln-items-sync");
-		Console.Out.WriteLine("https://www.nuget.org/packages/sln-items-sync");
-		Console.Out.WriteLine("A-GPL v3 Licensed");
+		Console.Error.WriteLine("https://github.com/timabell/sln-items-sync");
+		Console.Error.WriteLine("https://www.nuget.org/packages/sln-items-sync");
+		Console.Error.WriteLine("A-GPL v3 Licensed");
+		Console.Error.WriteLine();
 		var parserResult = Parser.Default.ParseArguments<Options>(args);
 		if (parserResult.Errors.Any())
 		{
+			WriteUsage();
 			return 1;
 		}
 
-		parserResult
-			.WithParsed(opts =>
-				_slnSync.SyncSlnFile(slnPath: opts.SlnPath, slnFolder: opts.SlnFolder, opts.Paths));
+		try
+		{
+			parserResult
+				.WithParsed(opts =>
+					_slnSync.SyncSlnFile(slnPath: opts.SlnPath, slnFolder: opts.SlnFolder, opts.Paths));
+		} catch(InvalidSlnPathException ex) {
+			Console.Error.WriteLine(ex.Message);
+			return 2;
+		} catch(PathNotFoundException ex) {
+			Console.Error.WriteLine(ex.Message);
+			return 3;
+		} catch(EmptyPathListException) {
+			Console.Error.WriteLine("No paths supplied to sync with.");
+			Console.Error.WriteLine("Supply a list of folder/file arguments that you want to be sync'd into the target solution folder.");
+			Console.Error.WriteLine();
+			WriteUsage();
+			return 4;
+		}
 
+		Console.Out.WriteLine("Sync completed.");
 		return 0;
+	}
+
+	private static void WriteUsage()
+	{
+		Console.Error.WriteLine("Usage: sln-items-sync --solution <SolutionFile.sln> paths-to-sync ...");
 	}
 }
