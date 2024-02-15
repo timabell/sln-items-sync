@@ -19,13 +19,13 @@ public class CLI
 	private class Options
 	{
 		[Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
-		public string SlnPath { get; set; }
+		public required string SlnPath { get; set; }
 
 		[Option('f', "folder", Required = false, HelpText = "Solution folder to target")]
 		public string SlnFolder { get; set; } = "SolutionItems";
 
 		[Value(0)]
-		public IEnumerable<string> Paths { get; set; }
+		public required IEnumerable<string> Paths { get; set; }
 	}
 
 	public int Run(string[] args)
