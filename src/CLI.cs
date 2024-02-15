@@ -49,15 +49,18 @@ public class CLI
 		} catch(InvalidSlnPathException ex) {
 			Console.Error.WriteLine(ex.Message);
 			return 2;
-		} catch(PathNotFoundException ex) {
+		} catch(SlnFileNotFoundException ex) {
 			Console.Error.WriteLine(ex.Message);
 			return 3;
+		} catch(PathNotFoundException ex) {
+			Console.Error.WriteLine(ex.Message);
+			return 4;
 		} catch(EmptyPathListException) {
 			Console.Error.WriteLine("No paths supplied to sync with.");
 			Console.Error.WriteLine("Supply a list of folder/file arguments that you want to be sync'd into the target solution folder.");
 			Console.Error.WriteLine();
 			WriteUsage();
-			return 4;
+			return 5;
 		}
 
 		Console.Out.WriteLine("Sync completed.");

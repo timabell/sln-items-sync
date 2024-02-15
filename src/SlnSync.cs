@@ -20,9 +20,13 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
 	public void SyncSlnFile(string slnPath, string slnFolder, IEnumerable<string> paths)
 	{
-		if (!File.Exists(slnPath) || !slnPath.EndsWith(".sln"))
+		if (!slnPath.EndsWith(".sln"))
 		{
-			throw new InvalidSlnPathException($"'{slnPath}' is not a sln file");
+			throw new InvalidSlnPathException(slnPath);
+		}
+		if (!File.Exists(slnPath))
+		{
+			throw new SlnFileNotFoundException(slnPath);
 		}
 		if (!paths.Any())
 		{
@@ -121,6 +125,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 		=> solutionProjects.OfType<SolutionFolder>().FirstOrDefault(project => project.Name == folderName);
 }
 
-public class PathNotFoundException(string path) : Exception($"Path '{path}' not found");
-public class InvalidSlnPathException(string s) : Exception(s);
+public class PathNotFoundException(string path) : Exception($"Path not found: '{path}'");
+public class SlnFileNotFoundException(string path) : Exception($"Invalid .sln file '{path}' - File not found.");
+public class InvalidSlnPathException(string path) : Exception($"Invalid .sln file '{path}' - File must have .sln extension");
 public class EmptyPathListException() : Exception();
