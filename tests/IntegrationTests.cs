@@ -9,6 +9,7 @@ public class IntegrationTests
 	private const string TargetSlnFile = "target.sln";
 	private readonly CLI _cli;
 	private readonly string _testFolder;
+	private const int SuccessExitCode = 0;
 
 	private static readonly string[] GuidsToReturn =
 	[
@@ -58,7 +59,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -143,7 +145,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -229,7 +232,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -298,7 +302,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "-f", "My Items", "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "-f", "My Items", "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -366,7 +371,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder/"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder/"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -431,7 +437,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "some-file.txt"]);
+		_cli.Run(["-s", TargetSlnFile, "some-file.txt"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
@@ -489,7 +496,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
