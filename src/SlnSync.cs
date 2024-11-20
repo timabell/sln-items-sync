@@ -18,8 +18,12 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	/// <param name="slnPath">relative path to sln file to modify</param>
 	/// <param name="slnFolder"></param>
 	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
-	public void SyncSlnFile(string slnPath, string slnFolder, IEnumerable<string> paths)
+	public void SyncSlnFile(string? slnPath, string slnFolder, IEnumerable<string> paths)
 	{
+		if (slnPath is null)
+		{
+			slnPath = FindSlnFile();
+		}
 		if (!slnPath.EndsWith(".sln"))
 		{
 			throw new InvalidSlnPathException(slnPath);
@@ -106,6 +110,23 @@ public class SlnSync(IGuidGenerator guidGenerator)
 		}
 	}
 
+	/// <summary>
+	/// search current folder for single .sln file and return it
+	/// throw if not found or more than one found
+	/// </summary>
+	/// <returns>sln file if found</returns>
+	/// <exception cref="SlnFileNotFoundException"></exception>
+	private static string FindSlnFile()
+	{
+		var slnFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.sln");
+		return slnFiles.Length switch
+		{
+			0 => throw new SlnFileNotFoundException("No .sln files found in current directory."),
+			> 1 => throw new MultipleSlnFilesFoundException("Multiple .sln files found in current directory. Specify one with --solution"),
+			_ => slnFiles[0],
+		};
+	}
+
 	private SolutionFolder FindOrCreateSolutionFolder(ICollection<IProject> solutionProjects,
 		string solutionFolderName)
 	{
@@ -126,6 +147,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 }
 
 public class PathNotFoundException(string path) : Exception($"Path not found: '{path}'");
+public class MultipleSlnFilesFoundException(string message) : Exception(message: message);
 public class SlnFileNotFoundException(string path) : Exception($"Invalid .sln file '{path}' - File not found.");
 public class InvalidSlnPathException(string path) : Exception($"Invalid .sln file '{path}' - File must have .sln extension");
 public class EmptyPathListException() : Exception();

@@ -18,8 +18,8 @@ public class CLI
 
 	private class Options
 	{
-		[Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
-		public required string SlnPath { get; set; }
+		[Option('s', "solution", HelpText = "path to .sln file to modify")]
+		public string? SlnPath { get; set; }
 
 		[Option('f', "folder", Required = false, HelpText = "Solution folder to target")]
 		public string SlnFolder { get; set; } = "SolutionItems";
