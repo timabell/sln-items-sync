@@ -29,6 +29,8 @@ Files and folders will be recursively add/removed to match the filesystem.
 
 `SolutionItems` folder will be created and populated if missing. The name can be customized with `--folder`.
 
+If there is only one `.sln` file in the current folder then the `--solution` argument can be omitted and it will automatically be found.
+
 ## License
 
 - [A-GPL v3](LICENSE)
