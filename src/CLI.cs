@@ -61,6 +61,9 @@ public class CLI
 			Console.Error.WriteLine();
 			WriteUsage();
 			return 5;
+		} catch(MultipleSlnFilesFoundException ex) {
+			Console.Error.WriteLine(ex.Message);
+			return 6;
 		}
 
 		Console.Out.WriteLine("Sync completed.");

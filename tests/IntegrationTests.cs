@@ -593,6 +593,16 @@ EndGlobal
 		ModifiedSln().Should().Be(expected);
 	}
 
+	[Fact]
+	public void FindsSlnFileInSameFolder()
+	{
+		File.WriteAllText(Path.Combine(_testFolder, "solution1.sln"), "blank");
+		File.WriteAllText(Path.Combine(_testFolder, "solution2.sln"), "blank");
+		_cli.Run(["some-file.txt"])
+			.Should().Be(6, because: "two solution files exist and arguments didn't specify which to use");
+		// todo: assert message written to stderr
+	}
+
 	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
 	private void SetupFilesystem(IEnumerable<string> paths)
