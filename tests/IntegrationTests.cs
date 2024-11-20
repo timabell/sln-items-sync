@@ -603,6 +603,46 @@ EndGlobal
 		// todo: assert message written to stderr
 	}
 
+	/// <summary>
+	/// This one is a bit different, it drives the logic a layer in from the rest
+	/// in order to force the input path to have the leading .\ that powershell likes
+	/// to add.
+	/// https://github.com/timabell/sln-items-sync/issues/20
+	/// </summary>
+	[Fact]
+	public void PowershellStripsLeadingDotSlash()
+	{
+		var slnSync = new SlnSync();
+		SetupFile("sln-items-file.txt");
+		const string contents = @"
+Microsoft Visual Studio Solution File, Format Version 
+# Visual Studio Version 
+VisualStudioVersion = 
+MinimumVisualStudioVersion = 
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{5507E0EE-86B8-41FA-813B-8D61B679BA24}""
+	ProjectSection(SolutionItems) = preProject
+	EndProjectSection
+EndProject
+Global
+EndGlobal
+";
+
+		var result = slnSync.SyncSlnText(contents, "SolutionItems", [@".\sln-items-file.txt"]);
+		result.Should().Be(@"
+Microsoft Visual Studio Solution File, Format Version 
+# Visual Studio Version 
+VisualStudioVersion = 
+MinimumVisualStudioVersion = 
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{5507E0EE-86B8-41FA-813B-8D61B679BA24}""
+	ProjectSection(SolutionItems) = preProject
+		sln-items-file.txt = sln-items-file.txt
+	EndProjectSection
+EndProject
+Global
+EndGlobal
+");
+	}
+
 	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
 	private void SetupFilesystem(IEnumerable<string> paths)

@@ -47,7 +47,9 @@ public class SlnSync(IGuidGenerator guidGenerator)
 
 		var solutionItems = FindOrCreateSolutionFolder(solution.RootProjects, slnFolder);
 
-		foreach (var path in paths.Select(Path.TrimEndingDirectorySeparator))
+		foreach (var path in paths
+			         .Select(Path.TrimEndingDirectorySeparator)
+			         .Select(path => path.StartsWith(@".\") ? path.Remove(0,2) : path)) // remove .\ prefix that powershell adds - https://github.com/timabell/sln-items-sync/issues/20
 		{
 			if (File.Exists(path))
 			{
