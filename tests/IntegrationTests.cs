@@ -9,6 +9,7 @@ public class IntegrationTests
 	private const string TargetSlnFile = "target.sln";
 	private readonly CLI _cli;
 	private readonly string _testFolder;
+	private const int SuccessExitCode = 0;
 
 	private static readonly string[] GuidsToReturn =
 	[
@@ -58,7 +59,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -143,7 +145,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -229,7 +232,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -298,7 +302,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "-f", "My Items", "root-file.txt", "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "-f", "My Items", "root-file.txt", "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -366,7 +371,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder/"]);
+		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder/"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -431,7 +437,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "some-file.txt"]);
+		_cli.Run(["-s", TargetSlnFile, "some-file.txt"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
@@ -489,7 +496,8 @@ EndGlobal
 		});
 
 		// Act
-		_cli.Run(["-s", TargetSlnFile, "subfolder"]);
+		_cli.Run(["-s", TargetSlnFile, "subfolder"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
 		const string expected = @"
@@ -526,6 +534,75 @@ EndGlobal
 		ModifiedSln().Should().Be(expected);
 	}
 
+
+	[Fact]
+	public void FindsSlnFile()
+	{
+		// Arrange
+		SetupSln(@"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+");
+
+		SetupFilesystem(new[]
+		{
+			"a-file.txt",
+		});
+
+		// Act
+		_cli.Run(["a-file.txt"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
+
+		// Assert
+		const string expected = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+	ProjectSection(SolutionItems) = preProject
+		a-file.txt = a-file.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+";
+
+		File.WriteAllText(Path.Combine(_testFolder, "expected.sln"), expected); // for kdiff debugging
+
+		ModifiedSln().Should().Be(expected);
+	}
+
+	[Fact]
+	public void FindsSlnFileInSameFolder()
+	{
+		File.WriteAllText(Path.Combine(_testFolder, "solution1.sln"), "blank");
+		File.WriteAllText(Path.Combine(_testFolder, "solution2.sln"), "blank");
+		_cli.Run(["some-file.txt"])
+			.Should().Be(6, because: "two solution files exist and arguments didn't specify which to use");
+		// todo: assert message written to stderr
+	}
+
 	private string ModifiedSln() => File.ReadAllText(Path.Combine(_testFolder, TargetSlnFile));
 
 	private void SetupFilesystem(IEnumerable<string> paths)
@@ -549,7 +626,9 @@ EndGlobal
 
 	private void SetupSln(string slnContents)
 	{
-		File.WriteAllText(Path.Combine(_testFolder, "original.sln"), slnContents);
+		var originalSlnFolder = Path.Combine(_testFolder, "original"); // put in subfolder to avoid sln detection finding it
+		Directory.CreateDirectory(originalSlnFolder);
+		File.WriteAllText(Path.Combine(originalSlnFolder, "original.sln"), slnContents);
 		File.WriteAllText(Path.Combine(_testFolder, TargetSlnFile), slnContents);
 	}
 }

@@ -18,8 +18,8 @@ public class CLI
 
 	private class Options
 	{
-		[Option('s', "solution", Required = true, HelpText = "path to .sln file to modify")]
-		public required string SlnPath { get; set; }
+		[Option('s', "solution", HelpText = "path to .sln file to modify")]
+		public string? SlnPath { get; set; }
 
 		[Option('f', "folder", Required = false, HelpText = "Solution folder to target")]
 		public string SlnFolder { get; set; } = "SolutionItems";
@@ -61,6 +61,9 @@ public class CLI
 			Console.Error.WriteLine();
 			WriteUsage();
 			return 5;
+		} catch(MultipleSlnFilesFoundException ex) {
+			Console.Error.WriteLine(ex.Message);
+			return 6;
 		}
 
 		Console.Out.WriteLine("Sync completed.");
