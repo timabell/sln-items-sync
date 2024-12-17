@@ -26,6 +26,12 @@
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="DotnetToolSettings.xml">
+      <Pack>true</Pack>
+      <PackagePath>content</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CommandLineParser" />
     <PackageReference Include="SlnEditor" />
   </ItemGroup>
