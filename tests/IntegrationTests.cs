@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using sln_items_sync;
 using Xunit.Abstractions;
 
