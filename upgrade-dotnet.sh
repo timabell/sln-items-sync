@@ -11,8 +11,13 @@ major_version=$(echo "$latest" | cut -d. -f1)
 target_framework="net${major_version}.0"
 echo "Updating TargetFramework to $target_framework"
 
-# Update all csproj files
-find . -name "*.csproj" -exec sed -i "s|<TargetFramework>net[0-9]*\.0</TargetFramework>|<TargetFramework>${target_framework}</TargetFramework>|g" {} \;
+# Update test project (single TFM - always tracks latest)
+sed -i "s|<TargetFramework>net[0-9]*\.0</TargetFramework>|<TargetFramework>${target_framework}</TargetFramework>|g" tests/tests.csproj
+
+# Update src project (multi-TFM - append new version to keep backwards compatibility)
+if ! grep -q "${target_framework}" src/sln-items-sync.csproj; then
+  sed -i "s|</TargetFrameworks>|;${target_framework}</TargetFrameworks>|g" src/sln-items-sync.csproj
+fi
 
 dotnet test
 
