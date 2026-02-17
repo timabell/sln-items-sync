@@ -22,7 +22,8 @@ commit_parsers = [
     { message = "^feat", group = "<!-- 1 -->✨ Features" },
     { message = "^fix", group = "<!-- 2 -->🐛 Bug Fixes" },
     { message = "^doc", group = "<!-- 3 -->📚 Documentation" },
-    { message = "^refactor", group = "<!-- 4 -->🧹 Refactor" },
+    { message = "^chore", group = "<!-- 4 -->🔧 Chores" },
+    { message = "^refactor", group = "<!-- 5 -->♻️ Refactor" },
 ]
 filter_commits = false
 tag_pattern = "v[0-9].*"
