@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
 using CommandLine;
 
 namespace sln_items_sync;
@@ -30,9 +32,12 @@ public class CLI
 
 	public int Run(string[] args)
 	{
+		var version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
 		Console.Error.WriteLine("https://github.com/timabell/sln-items-sync");
 		Console.Error.WriteLine("https://www.nuget.org/packages/sln-items-sync");
 		Console.Error.WriteLine("A-GPL v3 Licensed");
+		Console.Error.WriteLine($"Version: {version}");
+		Console.Error.WriteLine($"Running under dotnet runtime: {RuntimeInformation.FrameworkDescription}");
 		Console.Error.WriteLine();
 		var parserResult = Parser.Default.ParseArguments<Options>(args);
 		if (parserResult.Errors.Any())
