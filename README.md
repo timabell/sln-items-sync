@@ -27,7 +27,7 @@ sln-items-sync --solution sln-items-sync.sln README.md .github
 
 Files and folders will be recursively add/removed to match the filesystem.
 
-`Solution Items` folder will be created and populated if missing (matching Visual Studio's default). The name can be customized with `--folder`.
+`Solution Items` folder will be used, or created if missing (matching Visual Studio's default). Existing `SolutionItems` folder (no space) is also detected. The name can be customized with `--folder`.
 
 If there is only one `.sln` file in the current folder then the `--solution` argument can be omitted and it will automatically be found.
 

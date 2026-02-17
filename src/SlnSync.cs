@@ -10,15 +10,22 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	{
 	}
 
+	/// <summary>Folder names to search for when using defaults (first match wins, first used for creation)</summary>
+	private static readonly string[] DefaultFolderNames =
+	[
+		"Solution Items", // Visual Studio's default when adding a file to a solution
+		"SolutionItems", // commonly seen in the wild
+	];
+
 	/// <summary>
-	/// Update "SolutionItems" folder in sln based on filesystem files / folders passed in.
+	/// Update solution items folder in sln based on filesystem files / folders passed in.
 	/// - files will be added if missing
 	/// - folders will be forced to recursively match the filesystem
 	/// </summary>
 	/// <param name="slnPath">relative path to sln file to modify</param>
-	/// <param name="slnFolder"></param>
-	/// <param name="paths">list of paths to recursively add/update SolutionItems virtual folders with</param>
-	public void SyncSlnFile(string? slnPath, string slnFolder, IEnumerable<string> paths)
+	/// <param name="slnFolder">folder name to target (null for default with auto-detection)</param>
+	/// <param name="paths">list of paths to recursively add/update solution items virtual folders with</param>
+	public void SyncSlnFile(string? slnPath, string? slnFolder, IEnumerable<string> paths)
 	{
 		if (slnPath is null)
 		{
@@ -41,11 +48,12 @@ public class SlnSync(IGuidGenerator guidGenerator)
 		File.WriteAllText(slnPath, updatedSln, Encoding.UTF8); // explicit UTF-8 to get byte-order marker (which sln files seem to have)
 	}
 
-	public string SyncSlnText(string contents, string slnFolder, IEnumerable<string> paths)
+	public string SyncSlnText(string contents, string? slnFolder, IEnumerable<string> paths)
 	{
 		var solution = new Solution(contents);
 
-		var solutionItems = FindOrCreateSolutionFolder(solution.RootProjects, slnFolder);
+		var folderNames = slnFolder is not null ? [slnFolder] : DefaultFolderNames;
+		var solutionItems = FindOrCreateSolutionFolder(solution.RootProjects, folderNames);
 
 		foreach (var path in paths
 			         .Select(Path.TrimEndingDirectorySeparator)
@@ -79,7 +87,7 @@ public class SlnSync(IGuidGenerator guidGenerator)
 
 	private void SyncFolder(SolutionFolder parentFolder, DirectoryInfo directory, string path)
 	{
-		var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, directory.Name);
+		var solutionFolder = FindOrCreateSolutionFolder(parentFolder.Projects, [directory.Name]);
 		var files = directory.GetFiles();
 		foreach (var file in files)
 		{
@@ -130,18 +138,21 @@ public class SlnSync(IGuidGenerator guidGenerator)
 	}
 
 	private SolutionFolder FindOrCreateSolutionFolder(ICollection<IProject> solutionProjects,
-		string solutionFolderName)
+		string[] folderNames)
 	{
-		var solutionItems = FindSolutionFolder(solutionProjects, solutionFolderName);
-		if (solutionItems is not null)
+		foreach (var name in folderNames)
 		{
-			return solutionItems;
+			var folder = FindSolutionFolder(solutionProjects, name);
+			if (folder is not null)
+			{
+				return folder;
+			}
 		}
 
-		solutionItems = new SolutionFolder(id: guidGenerator.Next(), name: solutionFolderName);
-		solutionProjects.Add(solutionItems);
+		var newFolder = new SolutionFolder(id: guidGenerator.Next(), name: folderNames[0]);
+		solutionProjects.Add(newFolder);
 
-		return solutionItems;
+		return newFolder;
 	}
 
 	private static SolutionFolder? FindSolutionFolder(IEnumerable<IProject> solutionProjects, string folderName)

@@ -274,6 +274,69 @@ EndGlobal
 	}
 
 	[Fact]
+	public void AutoDetectsExistingSolutionItemsFolder()
+	{
+		// Arrange - sln has existing "SolutionItems" folder (no space)
+		SetupSln(@"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+	ProjectSection(SolutionItems) = preProject
+		existing-file.txt = existing-file.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+");
+
+		SetupFilesystem(new[]
+		{
+			"existing-file.txt",
+			"new-file.txt",
+		});
+
+		// Act - no -f flag, should auto-detect existing "SolutionItems" folder
+		_cli.Run(["-s", TargetSlnFile, "existing-file.txt", "new-file.txt"])
+			.Should().Be(SuccessExitCode, because: "command should succeed");
+
+		// Assert - should use existing "SolutionItems" folder, NOT create new "Solution Items"
+		const string expected = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+	ProjectSection(SolutionItems) = preProject
+		existing-file.txt = existing-file.txt
+		new-file.txt = new-file.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+";
+
+		File.WriteAllText(Path.Combine(_testFolder, "expected.sln"), expected); // for kdiff debugging
+
+		ModifiedSln().Should().Be(expected);
+	}
+
+	[Fact]
 	public void CustomFolderName()
 	{
 		// Arrange

@@ -22,7 +22,7 @@ public class CLI
 		public string? SlnPath { get; set; }
 
 		[Option('f', "folder", Required = false, HelpText = "Solution folder to target")]
-		public string SlnFolder { get; set; } = "Solution Items";
+		public string? SlnFolder { get; set; }
 
 		[Value(0)]
 		public required IEnumerable<string> Paths { get; set; }
