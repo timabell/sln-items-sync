@@ -102,8 +102,7 @@ jobs:
           VERSION=${{ steps.version_outputs.outputs.version }}
           dotnet pack src/sln-items-sync.csproj \
             --configuration Release \
-            --no-build \
-            -p:PackageVersion=$VERSION \
+            -p:Version=$VERSION \
             --output ./nupkgs
 
       - name: Create git tag

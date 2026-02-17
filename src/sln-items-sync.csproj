@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/timabell/sln-items-sync</RepositoryUrl>
     <PackageTags>.net c# solution sln</PackageTags>
     <Description>dotnet tool / cli to synchronize SolutionItems folders with filesystem</Description>
-    <Version>1.1.1</Version>
+    <Version>0.0.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/timabell/sln-items-sync</RepositoryUrl>
     <PackageTags>.net c# solution sln tool</PackageTags>
