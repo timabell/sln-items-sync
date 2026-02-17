@@ -14,19 +14,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.editorconfig = .editorconfig
 		README.md = README.md
 		run.sh = run.sh
-		publish.sh = publish.sh
 		upgrade-dotnet.sh = upgrade-dotnet.sh
 		upgrade-nugets.sh = upgrade-nugets.sh
 		upgrades.sh = upgrades.sh
 		Directory.Packages.props = Directory.Packages.props
+		release-notes.sh = release-notes.sh
+		LICENSE = LICENSE
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{50259428-AA36-4437-AF08-F1B4DFE0D580}"
+	ProjectSection(SolutionItems) = preProject
+		.github\cliff.toml = .github\cliff.toml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8397A6CD-B67C-4FBB-9ED9-59C92393BA16}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
-		.github\workflows\publish.yml = .github\workflows\publish.yml
+		.github\workflows\build-test.yml = .github\workflows\build-test.yml
+		.github\workflows\detect-bump.sh = .github\workflows\detect-bump.sh
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Global
