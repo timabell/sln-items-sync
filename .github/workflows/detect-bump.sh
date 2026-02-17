@@ -21,4 +21,6 @@ if echo "$COMMITS" | grep -qE '^bump: major$'; then
   echo "major"
 elif echo "$COMMITS" | grep -qE '^bump: minor$'; then
   echo "minor"
+else
+  echo "patch"
 fi
