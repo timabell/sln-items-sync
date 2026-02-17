@@ -1,0 +1,27 @@
+[changelog]
+header = ""
+body = """
+{% if version %}## Release {{ version }}
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+
+{% for commit in commits %}\
+- {{ commit.message | split(pat="\n") | first }} ({{ commit.id }})
+{% endfor %}
+{% endfor %}\
+"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = false
+filter_unconventional = false
+split_commits = false
+commit_parsers = [
+    { message = "^feat", group = "<!-- 1 -->✨ Features" },
+    { message = "^fix", group = "<!-- 2 -->🐛 Bug Fixes" },
+    { message = "^doc", group = "<!-- 3 -->📚 Documentation" },
+]
+filter_commits = false
+tag_pattern = "v[0-9].*"

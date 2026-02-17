@@ -1,0 +1,129 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# Prevent concurrent releases racing to create the same version tag
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-test:
+    uses: ./.github/workflows/build-test.yml
+
+  release:
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: src/
+
+      - name: Generate changelog
+        id: changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: .github/cliff.toml
+          args: --unreleased --strip header
+
+      - name: Check for release-worthy changes
+        id: check_changes
+        # git-cliff only includes section headers (###) when there are conventional commits - use that as a heuristic for whether there is anything worth a release in this push
+        run: |
+          if echo "${{ steps.changelog.outputs.content }}" | grep -q '#'; then
+            echo "Release-worthy changes found"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "No release-worthy changes found"
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Detect bump type
+        if: steps.check_changes.outputs.should_release == 'true'
+        id: bump
+        run: |
+          BUMP_TYPE=$(.github/workflows/detect-bump.sh)
+          echo "type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          echo "Bump type: ${BUMP_TYPE:-patch}"
+
+      - name: Calculate next version
+        if: steps.check_changes.outputs.should_release == 'true'
+        id: version
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: .github/cliff.toml
+          args: ${{ steps.bump.outputs.type && format('--bump {0} --bumped-version', steps.bump.outputs.type) || '--bumped-version' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set version outputs
+        if: steps.check_changes.outputs.should_release == 'true'
+        id: version_outputs
+        run: |
+          VERSION="${{ steps.version.outputs.content }}"
+          VERSION="${VERSION#v}"  # Remove v prefix if present
+          VERSION="${VERSION%%$'\n'*}"  # Remove any trailing newlines
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Pack NuGet packages
+        if: steps.check_changes.outputs.should_release == 'true'
+        run: |
+          VERSION=${{ steps.version_outputs.outputs.version }}
+          dotnet pack src/sln-items-sync.csproj \
+            --configuration Release \
+            --no-build \
+            -p:PackageVersion=$VERSION \
+            --output ./nupkgs
+
+      - name: Create git tag
+        if: steps.check_changes.outputs.should_release == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.version_outputs.outputs.tag }}
+          git push origin ${{ steps.version_outputs.outputs.tag }}
+
+      - name: Create GitHub Release
+        if: steps.check_changes.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version_outputs.outputs.tag }}
+          name: ${{ steps.version_outputs.outputs.tag }}
+          body: ${{ steps.changelog.outputs.content }}
+          files: ./nupkgs/*
+
+      - name: Push to GitHub Packages
+        if: steps.check_changes.outputs.should_release == 'true'
+        run: |
+          dotnet nuget push ./nupkgs/*.nupkg \
+            --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate
+
+      - name: Push to nuget.org
+        if: steps.check_changes.outputs.should_release == 'true'
+        run: |
+          dotnet nuget push ./nupkgs/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --skip-duplicate
