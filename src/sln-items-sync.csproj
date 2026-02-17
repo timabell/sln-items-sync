@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <PublishSingleFile>false</PublishSingleFile>
     <SelfContained>false</SelfContained>
+    <RollForward>Major</RollForward>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>sln-items-sync</ToolCommandName>
     <Company>Tim Abell</Company>
