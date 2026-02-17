@@ -508,7 +508,7 @@ EndGlobal
 		// https://stackoverflow.com/questions/5012167/how-can-i-detect-if-a-net-streamreader-found-a-utf8-bom-on-the-underlying-strea/5012344#5012344
 		using var fs = new FileStream(Path.Combine(_testFolder, TargetSlnFile), FileMode.Open);
 		byte[] bits = new byte[3];
-		fs.Read(bits, 0, 3);
+		fs.ReadExactly(bits, 0, 3);
 		var filePreamble = "0x" + Convert.ToHexString(bits);
 		filePreamble.Should().Be("0xEFBBBF");
 	}
