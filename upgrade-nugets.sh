@@ -9,4 +9,4 @@ fi
 
 dotnet outdated -u
 dotnet test
-git commit --include Directory.Packages.props --message "Nuget update/upgrade"
+git commit --include Directory.Packages.props --message "chore: Nuget upgrades"
