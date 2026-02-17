@@ -62,13 +62,13 @@ EndGlobal
 		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
 			.Should().Be(SuccessExitCode, because: "command should succeed");
 
-		// Assert
+		// Assert - default folder name should be "Solution Items" (with space) to match Visual Studio convention
 		const string expected = @"
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""Solution Items"", ""Solution Items"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
 	ProjectSection(SolutionItems) = preProject
 		root-file.txt = root-file.txt
 	EndProjectSection
@@ -144,8 +144,8 @@ EndGlobal
 			"subfolder/nested_folder/nested_file.txt",
 		});
 
-		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+		// Act - explicitly target existing "SolutionItems" folder
+		_cli.Run(["-s", TargetSlnFile, "-f", "SolutionItems", "root-file.txt", "subfolder"])
 			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
@@ -231,8 +231,8 @@ EndGlobal
 			"subfolder/nested_folder/valid_file.txt",
 		});
 
-		// Act
-		_cli.Run(["-s", TargetSlnFile, "root-file.txt", "subfolder"])
+		// Act - explicitly target existing "SolutionItems" folder
+		_cli.Run(["-s", TargetSlnFile, "-f", "SolutionItems", "root-file.txt", "subfolder"])
 			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
@@ -380,7 +380,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""Solution Items"", ""Solution Items"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
 	ProjectSection(SolutionItems) = preProject
 		root-file.txt = root-file.txt
 	EndProjectSection
@@ -495,8 +495,8 @@ EndGlobal
 			"subfolder/unchanged_nested_folder/nested_file.txt",
 		});
 
-		// Act
-		_cli.Run(["-s", TargetSlnFile, "subfolder"])
+		// Act - explicitly target existing "SolutionItems" folder
+		_cli.Run(["-s", TargetSlnFile, "-f", "SolutionItems", "subfolder"])
 			.Should().Be(SuccessExitCode, because: "command should succeed");
 
 		// Assert
@@ -572,7 +572,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""SolutionItems"", ""SolutionItems"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
+Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""Solution Items"", ""Solution Items"", ""{17591C35-3F90-4F4A-AA13-45CF8D824066}""
 	ProjectSection(SolutionItems) = preProject
 		a-file.txt = a-file.txt
 	EndProjectSection
