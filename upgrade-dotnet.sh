@@ -1,10 +1,11 @@
 #!/bin/sh -v
 set -e # exit on error
-asdf plugin update dotnet-core
-# filter out -preview releases, and assume last one is newest
-latest=`asdf list all dotnet-core | grep -v "-" | tail -n 2`
-echo $latest
-asdf install dotnet-core $latest
-asdf set dotnet-core $latest
+
+latest=`mise ls-remote dotnet-core | grep -P '^\d+\.\d+\.\d+$' | sort --version-sort | tail -n 1`
+echo "Updating to dotnet-core@$latest"
+
+mise use "dotnet-core@$latest"
+
 dotnet test
-git commit --include .tool-versions --message "Upgrade dotnet-core to latest"
+
+git commit -i .tool-versions -m "chore: Upgrade build to latest dotnet"
