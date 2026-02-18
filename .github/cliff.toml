@@ -7,7 +7,7 @@ body = """
 ### {{ group | striptags | trim | upper_first }}
 
 {% for commit in commits %}\
-- {{ commit.message | split(pat="\n") | first }} ({{ commit.id }})
+- {{ commit.message | split(pat="\n") | first | split(pat=": ") | slice(start=1) | join(sep=": ") | upper_first }} ({{ commit.id }})
 {% endfor %}
 {% endfor %}\
 """
