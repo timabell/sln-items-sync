@@ -1,5 +1,10 @@
-#!/bin/sh -v
+#!/bin/sh
 set -e # exit on error
+
+if ! git diff --cached --quiet; then
+  echo "Aborted: staged changes detected in git"
+  exit 1
+fi
 
 if ! command -v dotnet-outdated
 then
@@ -8,5 +13,15 @@ then
 fi
 
 dotnet outdated -u
+
+if git diff --quiet Directory.Packages.props; then
+  echo "No package updates available, nothing to do"
+  exit 0
+fi
+
+echo "Running regression tests..."
 dotnet test
-git commit --include Directory.Packages.props --message "chore: Nuget upgrades"
+
+echo "Committing upgrades..."
+git commit --include Directory.Packages.props \
+--message "chore: Dependency upgrades (nuget)"
